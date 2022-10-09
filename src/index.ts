@@ -6,12 +6,15 @@ import express, {
   Request,
   Response,
 } from "express";
+import { db_connect } from "./db-config/db-connection";
 
 config();
 
 const PORT: number = Number(process.env.PORT) || 8080;
 
 const app: Application = express();
+
+db_connect();
 
 app.get("/", (req: Request, res: Response, nex: NextFunction) => {
   res.status(200).json({
