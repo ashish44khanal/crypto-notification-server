@@ -7,7 +7,7 @@ export const DB_DATA_SOURCE = new DataSource({
   username: "root",
   password: "",
   database: "crypto",
-  entities: [join(__dirname, "**", "*.entity.{ts,js}")],
+  entities: ["dist/**/*.entity{.ts,.js}", "src/**/*.entity{.ts,.js}"],
   synchronize: true,
   // logging: true,
 });

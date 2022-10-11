@@ -1,19 +1,9 @@
 import axios from "axios";
 import { load } from "cheerio";
-import { response } from "express";
-
-type crypoTypes = {
-  rank: string;
-  name: string;
-  code: string;
-  image: string | undefined;
-  price: string;
-  market_cap: string;
-  changeIn24: string;
-  crypto_details_link: string | undefined;
-}[];
+import { crypoTypes } from "../types/global";
 
 const crypto_data: crypoTypes = [];
+
 export const crypto_coins_scraper = async () => {
   try {
     const response = await axios.get("https://coinranking.com/");
@@ -21,7 +11,7 @@ export const crypto_coins_scraper = async () => {
     const cryptos = $("#__layout > div > div.coins > div > table > tbody > tr");
 
     cryptos.each(function () {
-      const rank = $(this).find(".profile__rank").text().trim();
+      const rank = Number($(this).find(".profile__rank").text().trim());
       const name = $(this).find(".profile__link").text().trim();
       const code = $(this).find(".profile__subtitle-name").text().trim();
       const image = $(this)
@@ -35,20 +25,23 @@ export const crypto_coins_scraper = async () => {
       const changeIn24 = $(this).find(".change--light").text().trim();
       const crypto_details_link = $(this).find(".profile__link")?.attr("href");
 
-      crypto_data.push({
-        rank,
-        name,
-        code,
-        image,
-        price: price,
-        market_cap,
-        changeIn24,
-        crypto_details_link,
-      });
+      // since there is one empty row. Data fields become undefined and that row get 0 rank due to Number conversion so avoiding that row
+      if (rank > 0) {
+        crypto_data?.push({
+          rank,
+          name,
+          code,
+          image,
+          price: price,
+          market_cap,
+          changeIn24,
+          crypto_details_link,
+        });
+      }
     });
 
     return crypto_data;
   } catch (error) {
-    return error;
+    console.log(error);
   }
 };
