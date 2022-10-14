@@ -5,10 +5,11 @@ import { crypoTypes } from "../types/global";
 import cron from "node-cron";
 
 // job schedule to run a function every minute
-cron.schedule("*/5 * * * *", async () => {
-  const savedResponse = await saveCryptoLists();
-  console.log(savedResponse);
-});
+//TODO: uncomment this to run scheduler and delete rest of below comments on final version
+// cron.schedule("*/5 * * * *", async () => {
+//   const savedResponse = await saveCryptoLists();
+//   console.log(savedResponse);
+// });
 
 export const saveCryptoLists = async () =>
   //   req: Request,
@@ -72,15 +73,39 @@ export const getAllCryptoLists = async (
   next: NextFunction
 ) => {
   try {
-    const allData = await Cryptos.find({
-      order: {
-        rank: "ASC",
-      },
-    });
+    const { name, code } = req.query;
+
+    let unresolvedData = Cryptos.createQueryBuilder("cryptos").select([
+      "cryptos.id",
+      "cryptos.name",
+      "cryptos.rank",
+      "cryptos.code",
+      "cryptos.image",
+      "cryptos.price",
+      "cryptos.market_cap",
+      "cryptos.changeIn24",
+      "cryptos.crypto_details_link",
+    ]);
+    if (name) {
+      unresolvedData.where("cryptos.name like :nameQuery", {
+        nameQuery: `%${name}%`,
+      });
+    }
+    if (code) {
+      unresolvedData.where("cryptos.code like :codeQuery", {
+        codeQuery: `%${code}%`,
+      });
+    }
+
+    const allData = await unresolvedData
+      .orderBy("cryptos.rank", "ASC")
+      .getMany();
     res.status(200).send({
       err: false,
       msg: "Records fetched successfully!",
       data: allData,
     });
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
