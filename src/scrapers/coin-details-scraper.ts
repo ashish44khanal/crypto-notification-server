@@ -20,13 +20,12 @@ export const coin_details_scraper = async (coin_details_link: string) => {
     });
 
     await page.goto(`https://coinranking.com${coin_details_link}`, {
-      timeout: 50000,
+      timeout: 120000,
     });
     const varyingPriceList = await page.evaluate(() => {
       const EachPriceStats = document.querySelectorAll(".chart-stats__value");
       let data: string[] = [];
       EachPriceStats.forEach((tag, i) => {
-        console.log(tag);
         if (i === 1 || i === 2) {
           data.push(tag.innerHTML.trim());
         }
