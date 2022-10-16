@@ -17,5 +17,5 @@ watchlistRoute.post(
   validator,
   addCryptoToWatchlist
 );
-watchlistRoute.get("/all", getAllWatchlist);
-watchlistRoute.delete("/remove/:id", removeCryptoFromWatchlist);
+watchlistRoute.get("/all", auth, getAllWatchlist);
+watchlistRoute.delete("/remove/:id", auth, removeCryptoFromWatchlist);

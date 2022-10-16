@@ -3,7 +3,6 @@ import { CustomRequest } from "../auth/Jwt.strategy";
 import { Cryptos } from "../entities/cryptos.entity";
 import { Watchlist } from "../entities/watchlist.entity";
 import { coin_details_scraper } from "../scrapers/coin-details-scraper";
-import { User } from "../types/global";
 
 export const addCryptoToWatchlist = async (
   req: Request,
@@ -13,6 +12,20 @@ export const addCryptoToWatchlist = async (
   try {
     const { coin_id } = req.body;
     const { user_id } = (req as CustomRequest).user;
+
+    const isCoinExistInWatchlist = await Watchlist.createQueryBuilder(
+      "watchlist"
+    )
+      .leftJoinAndSelect("watchlist.coin_id", "coin")
+      .leftJoinAndSelect("watchlist.user", "user")
+      .select(["watchlist.id", "watchlist.max_price", "watchlist.min_price"])
+      .where("user.id=:userID", { userID: user_id })
+      .andWhere("coin.id=:coinID", { coinID: coin_id })
+      .getOne();
+
+    if (isCoinExistInWatchlist) {
+      throw new Error("Error! Coin already exist in your watchlist.");
+    }
 
     const coinDetails = await Cryptos.findOne({
       where: {
@@ -56,7 +69,26 @@ export const getAllWatchlist = async (
   next: NextFunction
 ) => {
   try {
-    const allData = await Watchlist.find();
+    const { user_id } = (req as CustomRequest).user;
+    const allData = await Watchlist.createQueryBuilder("watchlist")
+      .leftJoinAndSelect("watchlist.coin_id", "coin")
+      .leftJoinAndSelect("watchlist.user", "user")
+      .select([
+        "watchlist.id",
+        "watchlist.max_price",
+        "watchlist.min_price",
+        "coin.id",
+        "coin.rank",
+        "coin.name",
+        "coin.code",
+        "coin.image",
+        "coin.price",
+        "coin.market_cap",
+        "coin.changeIn24",
+      ])
+      .where("user.id=:userID", { userID: user_id })
+      .orderBy("coin.rank", "ASC")
+      .getMany();
     res.status(200).json({
       err: false,
       watchlist: allData,

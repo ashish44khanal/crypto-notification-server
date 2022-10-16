@@ -1,4 +1,3 @@
-import { next } from "cheerio/lib/api/traversing";
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { User } from "../entities/user.entity";

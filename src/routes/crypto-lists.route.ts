@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { auth } from "../auth/Jwt.strategy";
 import {
   getAllCryptoLists,
   saveCryptoLists,
