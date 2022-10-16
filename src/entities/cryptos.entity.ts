@@ -1,5 +1,6 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import { CommonEntity } from "../commons/common-entity";
+import { Watchlist } from "./watchlist.entity";
 
 @Entity()
 export class Cryptos extends CommonEntity {
@@ -26,4 +27,7 @@ export class Cryptos extends CommonEntity {
 
   @Column({ nullable: true })
   crypto_details_link: string;
+
+  @OneToMany(() => Watchlist, (watchlist) => watchlist.coin_id)
+  watchlist: Watchlist;
 }

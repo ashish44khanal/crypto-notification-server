@@ -12,6 +12,7 @@ import { cryptoRoutes } from "./routes/crypto-lists.route";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { watchlistRoute } from "./routes/watchlist.route";
+import { userRoutes } from "./routes/user.route";
 
 const app: Application = express();
 app.use(bodyParser.json());
@@ -38,12 +39,33 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 
 app.use("/cryptos", cryptoRoutes);
 app.use("/watchlist", watchlistRoute);
+app.use("/user", userRoutes);
 
 // error handling
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  res.status(err.status || 500).json({
-    status: err.status || 500,
-    msg: err.message,
+  console.log(err.stack);
+  console.log(err.name);
+  console.log(err.code);
+
+  if (req.xhr) {
+    return res.status(500).send({ error: "Something failed!" });
+  } else {
+    next(err);
+  }
+
+  // cutom msg for duplicate entry
+  if (err.message.split("Duplicate")[1]) {
+    return res.status(500).json({
+      err: "true",
+      status: 500,
+      message: "Err! Duplicate entry for this record is not allowed.",
+    });
+  }
+
+  return res.status(err.code || 500).json({
+    err: "true",
+    status: err.code,
+    message: err.message || "Something went wrong !",
   });
 };
 

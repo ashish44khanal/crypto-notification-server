@@ -8,3 +8,10 @@ export type crypoTypes = {
   changeIn24: string;
   crypto_details_link: string | undefined;
 }[];
+
+export type User = {
+  exp: number;
+  full_name: string;
+  iat: number;
+  user_id: string;
+};

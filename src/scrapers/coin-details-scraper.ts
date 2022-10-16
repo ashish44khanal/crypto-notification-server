@@ -4,10 +4,24 @@ import puppeteer from "puppeteer-core";
 
 export const coin_details_scraper = async (coin_details_link: string) => {
   try {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      userDataDir: "./catche/puppeteer",
+    });
     const page = await browser.newPage();
+    await page.setRequestInterception(true);
+    // avoiding images and css to load for web optimization
+    page.on("request", (request) => {
+      if (
+        request.resourceType() === "image" ||
+        request.resourceType() === "stylesheet"
+      )
+        request.abort();
+      else request.continue();
+    });
 
-    await page.goto(`https://coinranking.com${coin_details_link}`);
+    await page.goto(`https://coinranking.com${coin_details_link}`, {
+      timeout: 50000,
+    });
     const varyingPriceList = await page.evaluate(() => {
       const EachPriceStats = document.querySelectorAll(".chart-stats__value");
       let data: string[] = [];
