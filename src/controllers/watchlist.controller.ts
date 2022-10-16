@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { CustomRequest } from "../auth/Jwt.strategy";
+import { Cryptos } from "../entities/cryptos.entity";
 import { Watchlist } from "../entities/watchlist.entity";
 import { coin_details_scraper } from "../scrapers/coin-details-scraper";
 
@@ -8,18 +10,49 @@ export const addCryptoToWatchlist = async (
   next: NextFunction
 ) => {
   try {
-    const { coin_id, user_id, coin_details_link } = req.body;
-    const max_min_price_list = await coin_details_scraper(coin_details_link);
+    const { coin_id } = req.body;
+    const { user_id } = (req as CustomRequest).user;
+
+    const isCoinExistInWatchlist = await Watchlist.createQueryBuilder(
+      "watchlist"
+    )
+      .leftJoinAndSelect("watchlist.coin_id", "coin")
+      .leftJoinAndSelect("watchlist.user", "user")
+      .select(["watchlist.id", "watchlist.max_price", "watchlist.min_price"])
+      .where("user.id=:userID", { userID: user_id })
+      .andWhere("coin.id=:coinID", { coinID: coin_id })
+      .getOne();
+
+    if (isCoinExistInWatchlist) {
+      throw new Error("Error! Coin already exist in your watchlist.");
+    }
+
+    const coinDetails = await Cryptos.findOne({
+      where: {
+        id: coin_id,
+      },
+    });
+
+    if (!coinDetails) {
+      throw new Error("Error! Coin does not exist with this ID.");
+    }
+
+    const max_min_price_list = await coin_details_scraper(
+      coinDetails.crypto_details_link
+    );
+
+    if (!max_min_price_list) {
+      throw new Error("Unable to fetch max and min prices for coin");
+    }
 
     const watchlist = new Watchlist();
 
     watchlist.coin_id = coin_id;
-    watchlist.user_id = user_id;
-    watchlist.coin_details_link = coin_details_link;
+    watchlist.user = user_id as any;
     watchlist.max_price = max_min_price_list?.max_price as string;
     watchlist.min_price = max_min_price_list?.min_price as string;
 
-    const savedData = await watchlist.save();
+    await watchlist.save();
 
     res.status(200).json({
       err: false,
@@ -36,7 +69,26 @@ export const getAllWatchlist = async (
   next: NextFunction
 ) => {
   try {
-    const allData = await Watchlist.find();
+    const { user_id } = (req as CustomRequest).user;
+    const allData = await Watchlist.createQueryBuilder("watchlist")
+      .leftJoinAndSelect("watchlist.coin_id", "coin")
+      .leftJoinAndSelect("watchlist.user", "user")
+      .select([
+        "watchlist.id",
+        "watchlist.max_price",
+        "watchlist.min_price",
+        "coin.id",
+        "coin.rank",
+        "coin.name",
+        "coin.code",
+        "coin.image",
+        "coin.price",
+        "coin.market_cap",
+        "coin.changeIn24",
+      ])
+      .where("user.id=:userID", { userID: user_id })
+      .orderBy("coin.rank", "ASC")
+      .getMany();
     res.status(200).json({
       err: false,
       watchlist: allData,
@@ -60,7 +112,7 @@ export const removeCryptoFromWatchlist = async (
     });
     if (coinToBeRemoved) {
       await Watchlist.remove(coinToBeRemoved);
-      res.status(203).json({
+      res.status(200).json({
         err: false,
         msg: "Coin has been removed from watchlist!",
       });
