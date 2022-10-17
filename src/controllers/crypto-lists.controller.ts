@@ -8,11 +8,11 @@ import jwt from "jsonwebtoken";
 
 // job schedule to run a function every minute
 // TODO: uncomment this scheduler
-// cron.schedule("*/5 * * * *", async () => {
-//   console.log("first");
-//   const savedResponse = await saveCryptoLists();
-//   console.log(savedResponse);
-// });
+cron.schedule("*/5 * * * *", async () => {
+  console.log("first");
+  const savedResponse = await saveCryptoLists();
+  console.log(savedResponse);
+});
 
 export const saveCryptoLists = async () => {
   try {
