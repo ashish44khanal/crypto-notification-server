@@ -13,6 +13,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { watchlistRoute } from "./routes/watchlist.route";
 import { userRoutes } from "./routes/user.route";
+import { watchlistNotificationRouter } from "./routes/watchlist-notificatoin.route";
 
 const app: Application = express();
 app.use(bodyParser.json());
@@ -40,6 +41,7 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 app.use("/cryptos", cryptoRoutes);
 app.use("/watchlist", watchlistRoute);
 app.use("/user", userRoutes);
+app.use("/notification", watchlistNotificationRouter);
 
 // error handling
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

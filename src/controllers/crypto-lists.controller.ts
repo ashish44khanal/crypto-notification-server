@@ -7,7 +7,9 @@ import { Watchlist } from "../entities/watchlist.entity";
 import jwt from "jsonwebtoken";
 
 // job schedule to run a function every minute
+// TODO: uncomment this scheduler
 cron.schedule("*/5 * * * *", async () => {
+  console.log("first");
   const savedResponse = await saveCryptoLists();
   console.log(savedResponse);
 });
