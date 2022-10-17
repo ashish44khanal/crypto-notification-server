@@ -78,29 +78,15 @@ scheduler methods |
 
 ## Building the project
 ```
-<table>
-<thead>
-<tr>
-<th>foo</th>
-<th>bar</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>baz</td>
-<td>bim</td>
-</tr>
-</tbody>
-</table>
 
 ### Running the build
 All the different build steps are orchestrated via [npm scripts].
 
-**npm scripts**|**Description**
-:-----:|:-----:
-start|Runs full build and runs node on dist/index.js. Can be invoked with `npm start
-build|Full build. Runs ALL build tasks with all watch tasks 
-**dev**|**Runs application in development mode with nodemon watching the tasks. Can be invoked with `npm dev**                                       
+| npm scripts | Description |
+| -----|----- |
+| start | Runs full build and runs node on dist/index.js. Can be invoked with `npm start |
+| build | Full build. Runs ALL build tasks with all watch tasks |
+| dev | Runs application in development mode with nodemon watching the tasks. Can be invoked with `npm dev |                                   
 
 ## npm install fails
 The current solution has an example for using a private npm repository. if you want to use the public npm repository, remove the .npmrc file.
