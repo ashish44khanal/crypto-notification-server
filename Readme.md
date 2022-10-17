@@ -78,6 +78,20 @@ scheduler methods |
 
 ## Building the project
 ```
+<table>
+<thead>
+<tr>
+<th>foo</th>
+<th>bar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>baz</td>
+<td>bim</td>
+</tr>
+</tbody>
+</table>
 
 ### Running the build
 All the different build steps are orchestrated via [npm scripts].
