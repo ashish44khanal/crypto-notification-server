@@ -82,7 +82,7 @@ scheduler methods |
 ### Running the build
 All the different build steps are orchestrated via [npm scripts].
 
-| npm scripts | Description |
+| Npm Scripts | Description |
 | ------- | ------------------------------------------------------------------------------------------------- |
 | start | Runs full build and runs node on dist/index.js. Can be invoked with `npm start |
 | build | Full build. Runs ALL build tasks with all watch tasks |
