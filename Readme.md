@@ -77,11 +77,10 @@ scheduler methods |
 | tslint.json              | Config settings for TSLint code style checking                                                |
 
 ## Building the project
-```
 
 | Npm Scripts | Description |
 | --- | --- |
-| start | Runs full build and runs node on dist/index.js. Can be invoked with `npm start |
+| start | Runs full build and runs node on dist/index.js. Can be invoked with npm start |
 | build | Full build. Runs ALL build tasks with all watch tasks |
 | dev | Runs application in development mode with nodemon watching the tasks. Can be invoked with `npm dev |                                   
 
